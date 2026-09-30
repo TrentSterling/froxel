@@ -1,8 +1,22 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#091019"><meta name="description" content="500 point lights. Three scenes. Inspect actual froxel light lists, follow a highlight, and compare shaders. Single-file Three.js lighting showcase by Trent Sterling."><title>FROXEL / 500 v3 — Performance receipts</title><link rel="icon" href="data:,">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#091019"><meta name="description" content="500 point lights. Three scenes. Inspect actual froxel light lists, follow a highlight, and compare shaders. Interactive GPU lighting showcase by Trent Sterling."><title>Froxel V5 | Interactive GPU lighting by Trent Sterling</title><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://tront.xyz/froxel/">
+<meta name="author" content="Trent Sterling">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Froxel V5 | Lighting, exposed.">
+<meta property="og:description" content="500 moving point lights. Three scenes. Explore clustered shading, inspect real light lists, and benchmark your GPU.">
+<meta property="og:url" content="https://tront.xyz/froxel/">
+<meta property="og:image" content="https://tront.xyz/froxel/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Froxel lighting playground: colored point lights illuminate an industrial hall.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Froxel V5 | Lighting, exposed.">
+<meta name="twitter:description" content="Explore 500 moving lights, inspect the froxels, and benchmark your GPU.">
+<meta name="twitter:image" content="https://tront.xyz/froxel/og-image.png">
+<link rel="stylesheet" href="ui.css">
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091019;color:#e8f3f5;font-family:system-ui,sans-serif;user-select:none}canvas{position:fixed;inset:0;width:100%;height:100%;display:block}#view{z-index:0}#hud{z-index:2;touch-action:none;cursor:crosshair}#boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,90vw);padding:30px;z-index:5;border-left:2px solid #60dfdf;background:#0e1a24;line-height:1.65}#boot h1{letter-spacing:3px;font-size:26px;margin:0 0 10px}#boot p{font-size:14px;color:#a7bccb;white-space:pre-wrap;overflow-wrap:anywhere}#boot small{color:#68d3d8}
-</style></head><body><canvas id="view" aria-label="Three-dimensional lighting playground"></canvas><canvas id="hud" aria-label="Lighting playground controls: WASD move, right mouse look, click throw, 1/2/3 tools, Tab inspect, H hide controls, Space pause"></canvas><div id="boot"><h1>FROXEL / 500</h1><p>Compiling the lighting playground…</p><small>Trent Sterling · Play / Explain / Test</small></div>
+</style></head><body><canvas id="view" aria-label="Three-dimensional lighting playground"></canvas><canvas id="hud" aria-label="Lighting playground controls: WASD move, right mouse look, click throw, 1/2/3 tools, Tab navigate controls, H hide controls, Space pause"></canvas><div id="boot"><h1>FROXEL / 500</h1><p>Compiling the lighting playground…</p><small>Trent Sterling · Play / Explain / Test</small></div>
 <!-- Three.js is bundled under the MIT license.
 Copyright (c) 2010-2022 Three.js authors.
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,7 +51,7 @@ experiments. Research and technique credits are in the About screen.
 </script>
 
 <script>
-/* FROXEL / 500 v3 — surface-resolved clustered shading. RGB first-order directional moments.
+/* FROXEL / 500 v3 ; surface-resolved clustered shading. RGB first-order directional moments.
    GPU light animation -> frustum light-index bitsets -> per-surface shading.
    Spatial SH lattice retained only for the labeled legacy comparison and fog.
    Full bitsets: no per-cluster list truncation. No shadows, no temporal history. */
@@ -1077,7 +1091,7 @@ class MatrixView{
 <script>
 (async()=>{
 'use strict';
-const BUILD='FROXEL / 500 · v3.0',T=THREE;
+const BUILD='FROXEL · v5.0.0',T=THREE;
 let canvas=document.getElementById('view');const hud=document.getElementById('hud'),ctx=hud.getContext('2d'),boot=document.getElementById('boot');
 const state={scene:0,workspace:"play",stage:0,drawerHidden:false,normalDetail:1,test:0,separation:3,sweep:false,benchToken:0,count:500,mode:0,specular:true,cluster:[20,12,24],reference:false,manual:false,layout:0,radius:4.4,power:1,exposure:1.1,paused:false,time:16,grid:[32,18,36],quality:1,scale:1,markers:true,fog:false,debug:0,slice:19,tool:0,color:0,inspect:false,about:false,clean:false,tour:false};
 const clusterGrids=[[12,7,16],[20,12,24],[24,14,24]];
@@ -1092,7 +1106,7 @@ const camera=new T.PerspectiveCamera(62,W/H,.08,110),vp=new T.Matrix4(),euler=ne
 function home(){camera.position.set(...world.home.position);camera.lookAt(...world.home.target);euler.setFromQuaternion(camera.quaternion,'YXZ');camera.updateMatrixWorld(true);state.tour=false;}
 home();
 function toast(text,seconds=3){notice=text;noticeUntil=performance.now()+seconds*1000;drawHudClock=0;}
-function materialView(){camera.position.set(-4.4,3.05,5.8);camera.lookAt(-10.,1.8,-2.);euler.setFromQuaternion(camera.quaternion,'YXZ');state.tour=false;toast('Material bay — polished metal, satin, rough paint',3);}
+function materialView(){camera.position.set(-4.4,3.05,5.8);camera.lookAt(-10.,1.8,-2.);euler.setFromQuaternion(camera.quaternion,'YXZ');state.tour=false;toast('Material bay ; polished metal, satin, rough paint',3);}
 function total(){return state.count+orbs.length;}
 function setCount(n){state.count=Math.min(8192-orbs.length,Math.max(0,Math.round(n)));probeData=null;drawHudClock=0;}
 function setQuality(q){state.quality=q;state.cluster=clusterGrids[q].slice();state.grid=grids[q].slice();state.slice=Math.min(state.slice,state.grid[2]-1);backend?.setGrid(state.grid);drawHudClock=0;}
@@ -1108,7 +1122,7 @@ ready=true;boot.style.display='none';
 }catch(e){fatal(e.stack||e.message);return;}
 function resize(){W=innerWidth;H=innerHeight;const dpr=Math.min(devicePixelRatio||1,1.5);hud.width=Math.round(W*dpr);hud.height=Math.round(H*dpr);hud.style.width=W+'px';hud.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
  const factor=state.scale*Math.min(dpr,Math.sqrt(2100000/(W*H)));const rw=Math.max(160,Math.round(W*factor)),rh=Math.max(120,Math.round(H*factor));backend.resize(rw,rh);camera.aspect=W/H;camera.updateProjectionMatrix();matrix?.resize(W,H);drawHudClock=0;}
-resize();window.addEventListener('resize',resize);if(/swiftshader|llvmpipe|software/i.test(backend.adapter))toast('Software GPU detected — not representative hardware performance',7);
+resize();window.addEventListener('resize',resize);if(/swiftshader|llvmpipe|software/i.test(backend.adapter))toast('Software GPU detected ; not representative hardware performance',7);
 function surfaceAt(x=mouse.right?W/2:mouse.x,y=mouse.right?H/2:mouse.y){ndc.set(x/W*2-1,1-y/H*2);ray.setFromCamera(ndc,camera);return ray.intersectObjects(world.rayObjects,false)[0];}
 function clampPosition(p){p.x=Math.max(-17.65,Math.min(17.65,p.x));p.y=Math.max(.15,Math.min(11.85,p.y));p.z=Math.max(-37.65,Math.min(17.65,p.z));return p;}
 function addOrb(p,velocity,painted=false){if(orbs.length<64&&total()>=8192){if(state.count>4)state.count--;}
@@ -1168,7 +1182,7 @@ hud.addEventListener('wheel',e=>{e.preventDefault();if(bench||busy)return;if(sta
  if(grab){grab.distance=Math.max(1,Math.min(24,grab.distance+e.deltaY*.008));}else if(mouse.right){speed=Math.max(1,Math.min(24,speed-e.deltaY*.008));toast('Fly speed '+speed.toFixed(1),1);}else{state.radius=Math.max(1,Math.min(12,state.radius-e.deltaY*.003));probeData=null;}
  drawHudClock=0;
 },{passive:false});
-window.addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.repeat)return;
+window.addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.repeat)return;
  if(e.code==='Escape'){releasePointer();if(bench){endBench(true);return;}if(busy)return;if(state.about){state.about=false;}else if(comparison){comparison=null;}else if(matrix?.active){matrix.close();}else{setWorkspace('play');state.clean=false;}drawHudClock=0;return;}
  if(bench||busy||state.about)return;
  if(e.code==='KeyH'){state.clean=!state.clean;drawHudClock=0;return;}
@@ -1232,7 +1246,15 @@ function renderScene(){
 }
 async function runTask(message,fn){if(busy||bench)return;busy=message;releasePointer();drawHUD(performance.now());try{await fn();}catch(e){toast(e.message||String(e),7);console.error(e);}finally{busy='';drawHudClock=0;}}
 function copyFrame(){const c=document.createElement('canvas');c.width=canvas.width;c.height=canvas.height;c.getContext('2d',{willReadFrequently:true}).drawImage(canvas,0,0);return c;}
-async function captureFrame(){renderScene();if(backend.api==='webgpu')await backend.device.queue.onSubmittedWorkDone();else backend.gl.finish();return copyFrame();}
+async function captureFrame(){
+ renderScene();
+ // Copy in the submitting task. Awaiting GPU completion first lets the browser
+ // present and discard the canvas backing image before drawImage can read it.
+ const captured=copyFrame();
+ if(backend.api==='webgpu')await backend.device.queue.onSubmittedWorkDone();
+ else backend.gl.finish();
+ return captured;
+}
 function pickProbe(x=mouse.x,y=mouse.y){
  if(busy||bench)return;const hit=surfaceAt(x,y);if(!hit){toast('Pick a surface, not the sky');return;}
  pin={point:hit.point.clone(),normal:hit.face.normal.clone().transformDirection(hit.object.matrixWorld),mesh:hit.object};probeData=null;
@@ -1254,7 +1276,7 @@ function applyTest(name){
  if(name==='one'||name==='opposing'){setScene(1);state.workspace=wk;setCount(name==='one'?1:2);state.test=name==='one'?1:2;state.radius=name==='one'?6:10;state.time=0;state.markers=true;state.mode=0;camera.position.set(5.8,4.2,8.6);camera.lookAt(-.3,1.2,-3.5);syncCamera();}
  else if(name==='overlap'){setScene(0);state.workspace=wk;setCount(500);state.layout=2;state.radius=4.4;camera.position.set(8,5,6);camera.lookAt(0,1.8,-10);syncCamera();}
  else if(name==='boundary'){setScene(1);state.workspace=wk;setCount(128);state.test=3;state.radius=2.;state.paused=true;state.time=16;camera.position.set(7.,3.6,9.5);camera.lookAt(0,1.3,-9);syncCamera();sweepSaved={position:camera.position.clone(),quaternion:camera.quaternion.clone(),time:0};state.sweep=true;}
- toast(({one:'One light — smooth range and highlight sweep',opposing:'Two colors — separate highlights versus SH compression',overlap:'Same 500 lights, concentrated overlap',boundary:'Frozen lights, moving camera — watch the image boundaries'})[name],4);drawHudClock=0;
+ toast(({one:'One light ; smooth range and highlight sweep',opposing:'Two colors ; separate highlights versus SH compression',overlap:'Same 500 lights, concentrated overlap',boundary:'Frozen lights, moving camera ; watch the image boundaries'})[name],4);drawHudClock=0;
 }
 function reset(){if(busy||bench)return;setWorkspace('play');state.mode=0;state.clean=false;state.sweep=false;setScene(0);toast('Back to the original hall · 500 lights');}
 function stopSweep(){state.sweep=false;}
@@ -1262,7 +1284,7 @@ function imageDifference(a,b){const ax=a.getContext('2d').getImageData(0,0,a.wid
  for(let i=0;i<ax.data.length;i+=4){let changed=false;for(let k=0;k<3;k++){const d=Math.abs(ax.data[i+k]-bx.data[i+k]);max=Math.max(max,d);sum+=d;changed||=d!==0;out.data[i+k]=Math.min(255,d*8);}out.data[i+3]=255;if(changed)pixels++;}c.getContext('2d').putImageData(out,0,0);return {image:c,max,mean:sum/(a.width*a.height*3),changedPixels:pixels,totalPixels:a.width*a.height};
 }
 async function compare(kind){if(kind==='culling'&&total()>1024){toast('Lower the count to 1,024 or fewer for the slow all-light reference.',5);return;}
- await runTask('Capturing matched images — camera, lights and exposure frozen…',async()=>{
+ await runTask('Capturing matched images ; camera, lights and exposure frozen…',async()=>{
   matrix?.close();const saved={mode:state.mode,reference:state.reference,markers:state.markers,fog:state.fog,debug:state.debug,paused:state.paused,specular:state.specular},size=[canvas.width,canvas.height];
   state.paused=true;state.debug=0;state.markers=false;state.fog=false;state.specular=true;state.sweep=false;const width=Math.min(640,size[0]),height=Math.round(width*size[1]/size[0]);backend.resize(width,height);
   try{state.mode=kind==='culling'?Math.min(state.mode,2):0;state.reference=false;const a=await captureFrame();const mode=state.mode;if(kind==='culling')state.reference=true;else state.mode=1;const b=await captureFrame(),diff=imageDifference(a,b);
@@ -1303,28 +1325,11 @@ function scrollPanel(title,draw){
 }
 function drawHUD(now){
  ctx.clearRect(0,0,W,H);zones=[];
- if(state.clean){text('H · show controls',18,H-18,12,dim);return;}
- const compact=W<700;
- // The identity stays small; the environment, not the UI, is the hero.
- panel(14,12,compact?203:252,55,.78);text('FROXEL / 500',28,32,compact?19:23,ink,750);text('V3  /  LIGHTING, EXPOSED',29,53,10,cyan,650);
- const tx=compact?16:Math.max(282,W/2-161),ty=compact?76:22;
- rowButtons(['Play','Explain','Test'],['play','explain','test'].indexOf(state.workspace),tx,ty,compact?W-32:288,i=>setWorkspace(['play','explain','test'][i]));
- const statx=W-18;text(total().toLocaleString()+' lights',statx,29,compact?17:21,ink,700,'right');
- text(compact?backend.api:backend.kind,statx,50,11,cyan,550,'right');
- if(!compact){const gpu=backend.gpu.prepare!=null&&backend.gpu.render!=null?backend.gpu.prepare+backend.gpu.render:null;text(matrix?.active?'Frozen source · independent observer':comparison?'Matched frozen captures':`${Math.round(fps)} FPS · GPU ${gpu==null?'unavailable':gpu.toFixed(2)+' ms'}`,statx,70,11,dim,450,'right');}
- const sy=compact?114:82;rowButtons(['Hall','Studio','Courtyard'],state.scene,16,sy,compact?W-32:286,i=>setScene(i));
- if(!compact){button('Sources',314,sy,80,29,state.about,()=>{state.about=!state.about;panelScroll=0;});button('Home',402,sy,65,29,false,()=>{home();state.sweep=false;});if(state.workspace!=='play')button(state.drawerHidden?'Show details':'Details',478,sy,99,29,!state.drawerHidden,()=>state.drawerHidden=!state.drawerHidden);}
+ if(state.clean)return;
  if(comparison)drawComparison();else if(matrix?.active)drawMatrixInset();else if(state.workspace==='explain')drawProbeOverlay();
- if(state.workspace!=='play'&&!state.drawerHidden){if(comparison)drawTestPanel();else if(state.workspace==='explain'){if(matrix?.active)drawMatrixPanel();else drawExplainPanel();}else drawTestPanel();}
- drawFooter();
- text('Trent Sterling · tront.xyz',18,H-10,11,cyan,550);zones.push({label:'tront.xyz',x:14,y:H-21,w:170,h:21,action:()=>link('https://tront.xyz')});
- if(compact){text('Sources',W-20,H-10,11,ink,550,'right');zones.push({label:'Sources',x:W-100,y:H-23,w:88,h:23,action:()=>{state.about=true;panelScroll=0;}});}
- if(state.about)drawAboutV3();
- if(now<noticeUntil&&!busy&&!state.about&&!bench){const nw=Math.min(540,W-38);panel((W-nw)/2,contentTop()+6,nw,35,.95);text(notice,(W)/2,contentTop()+24,W<700?11:12,ink,500,'center');}
  if(mouse.right&&!matrix?.active){ctx.strokeStyle=ink;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W/2-5,H/2);ctx.lineTo(W/2+5,H/2);ctx.moveTo(W/2,H/2-5);ctx.lineTo(W/2,H/2+5);ctx.stroke();}
- if(bench){zones=[];const bw=Math.min(470,W-34),bx=(W-bw)/2;panel(bx,contentTop()+12,bw,89,.99);text('BENCHMARK · '+names.mode[state.mode],W/2,contentTop()+35,15,cyan,650,'center');text(`${bench.stage+1} / 3 modes   ·   ${Math.min(120,bench.frame)} / 120 frames`,W/2,contentTop()+59,12,ink,500,'center');button('Stop',bx+bw-79,contentTop()+61,65,27,false,()=>endBench(true));zones[zones.length-1].cancel=true;}
- if(busy){zones=[];const bw=Math.min(560,W-30);panel((W-bw)/2,H/2-35,bw,70,.99);text('GPU INSPECTION',W/2,H/2-15,12,cyan,700,'center');text(busy,W/2,H/2+10,W<700?11:13,ink,450,'center');}
 }
+
 function drawFooter(){
  const h=footerHeight(),x=16,y=H-h-23,w=W-32;panel(x,y,w,h,.96);
  if(matrix?.active){text('THE LIGHT LIST, NOT THE LIGHTING',x+16,y+21,11,cyan,700);wrap('RMB drag: orbit the observer · Wheel: zoom · Click a froxel · Arrow keys: slice / light',x+16,y+46,w-32,12,ink);
@@ -1415,7 +1420,7 @@ function drawTestPanel(){scrollPanel(comparison?'Image comparison':'Test the ren
  if(state.test===2){slider('LIGHT SEPARATION',state.separation,.2,6,x,y,w,v=>state.separation=v,v=>(v*2).toFixed(1)+' m');y+=47;}
  if(state.sweep){button('Stop camera sweep',x,y,w,29,true,stopSweep);y+=44;}
  smallHeading('DISTRIBUTION',x,y);y+=15;for(let row=0;row<2;row++)rowButtons(names.layout.slice(row*3,row*3+3),state.layout-row*3,x,y+row*36,w,i=>{state.layout=row*3+i;state.test=0;});y+=87;
- smallHeading('POPULATION',x,y);y+=15;rowButtons(['128','500','1,024'],[128,500,1024].indexOf(state.count),x,y,w,i=>setCount([128,500,1024][i]));y+=36;rowButtons(['2,048','8,192'],[2048,8192].indexOf(state.count),x,y,w,i=>{setCount([2048,8192][i]);toast('Stress workload — not a frame-rate promise',3);});y+=49;
+ smallHeading('POPULATION',x,y);y+=15;rowButtons(['128','500','1,024'],[128,500,1024].indexOf(state.count),x,y,w,i=>setCount([128,500,1024][i]));y+=36;rowButtons(['2,048','8,192'],[2048,8192].indexOf(state.count),x,y,w,i=>{setCount([2048,8192][i]);toast('Stress workload ; not a frame-rate promise',3);});y+=49;
  smallHeading('SHADING CHANNEL',x,y);y+=15;const ds=[['Lit',0],['Counts',1],['Depth',9],['Normals',3],['Roughness',7],['Metallic',8]];for(let row=0;row<2;row++)rowButtons(ds.slice(row*3,row*3+3).map(a=>a[0]),ds.slice(row*3,row*3+3).findIndex(a=>a[1]===state.debug),x,y+row*36,w,i=>state.debug=ds[row*3+i][1]);y+=84;
  button('Specular only',x,y,(w-6)/2,29,state.debug===5,()=>{state.debug=state.debug===5?0:5;state.specular=true;});button('Tile overlay',x+(w+6)/2,y,(w-6)/2,29,state.debug===4,()=>state.debug=state.debug===4?0:4);y+=44;
  smallHeading('CLUSTER DETAIL',x,y);y+=15;rowButtons(names.quality,state.quality,x,y,w,setQuality);y+=44;
@@ -1450,7 +1455,13 @@ function drawAboutV3(){
 
 
 
-window.FROXEL={syncCamera:()=>{euler.setFromQuaternion(camera.quaternion,'YXZ');camera.updateMatrixWorld(true);},state,get world(){return world;},camera,backend,get matrix(){return matrix;},get pin(){return pin;},get probeInfo(){return probeInfo;},get comparison(){return comparison;},get testResult(){return testResult;},get busy(){return busy;},getStats:snapshot,setCount,setQuality,setScene,setWorkspace,setStage,reset,home,materialView,applyTest,compare,gridSweep,openMatrix,pickProbe,editMaterial,restoreMaterial,resources,resize,addLight:(p=[0,2,-8],v=[0,0,0],painted=true)=>addOrb(new T.Vector3(...p),new T.Vector3(...v),painted),startBenchmark:beginBench,stopBenchmark:()=>endBench(true),getReport:()=>lastBench,debug:()=>backend.diagnostics(),renderOnce:()=>frame(performance.now()),renderScene,getFrame:()=>frameNumber,getZones:()=>zones.map(({action,set,...z})=>z),orbs};
+window.FROXEL={
+ get notice(){return performance.now()<noticeUntil?notice:'';},
+ exportCell, closeComparison:()=>{comparison=null;},
+ refreshProbe:()=>{if(pin)runTask('Reading GPU light lists...',async()=>{renderScene();probeData=await backend.diagnostics();probeInfo=inspectSurface(probeData,pin.point,pin.normal);});else pickProbe(W*.45,H*.5);},
+ touchLook:(dx,dy)=>{if(busy||bench||window.FROXELBench?.running)return;if(matrix?.active){matrix.orbit(dx,dy);return;}state.tour=false;euler.y-=dx*.003;euler.x=Math.max(-1.47,Math.min(1.47,euler.x-dy*.003));camera.quaternion.setFromEuler(euler);},
+ touchTap:(x,y)=>{if(busy||bench||comparison||window.FROXELBench?.running)return;mouse.x=x;mouse.y=y;if(matrix?.active){matrix.pick(x,y,W,H);return;}if(state.workspace==='explain')pickProbe(x,y);else useTool();},
+ syncCamera:()=>{euler.setFromQuaternion(camera.quaternion,'YXZ');camera.updateMatrixWorld(true);},state,get world(){return world;},camera,backend,get matrix(){return matrix;},get pin(){return pin;},get probeInfo(){return probeInfo;},get comparison(){return comparison;},get testResult(){return testResult;},get busy(){return busy;},getStats:snapshot,setCount,setQuality,setScene,setWorkspace,setStage,reset,home,materialView,applyTest,compare,gridSweep,openMatrix,pickProbe,editMaterial,restoreMaterial,resources,resize,addLight:(p=[0,2,-8],v=[0,0,0],painted=true)=>addOrb(new T.Vector3(...p),new T.Vector3(...v),painted),startBenchmark:beginBench,stopBenchmark:()=>endBench(true),getReport:()=>lastBench,debug:()=>backend.diagnostics(),renderOnce:()=>frame(performance.now()),renderScene,getFrame:()=>frameNumber,getZones:()=>zones.map(({action,set,...z})=>z),orbs};
 function frame(now){if(!ready)return;try{
  const begin=performance.now(),delta=lastFrame?now-lastFrame:16.67,dt=Math.min(.04,delta/1000);lastFrame=now;
  if(delta<10000&&!busy&&!matrix?.active){intervals.push(delta);if(intervals.length>90)intervals.shift();fps=1000/(intervals.reduce((a,b)=>a+b,0)/intervals.length);}
@@ -1521,7 +1532,7 @@ window.installReceiptCollector = function(F) {
   if(running)throw Error('Already running');running=true;cancelled=false;
   const savedOrbs=F.orbs.map(o=>({...o,pos:o.pos.clone(),vel:o.vel.clone(),color:o.color.slice()}));
   const saved=structuredClone(F.state),pos=F.camera.position.clone(),quat=F.camera.quaternion.clone(),aspect=F.camera.aspect,size=[B.canvas.width,B.canvas.height],oldEvery=B.timerEvery;
-  const report={schema:'froxel-receipts-1',startedAt:new Date().toISOString(),environment:{userAgent:navigator.userAgent,backend:B.kind,adapter:B.adapter,software:/swiftshader|llvmpipe|software/i.test(B.adapter),gpuTimers:!!(B.timestamps||B.ext),css:[innerWidth,innerHeight],dpr:devicePixelRatio,hardwareConcurrency:navigator.hardwareConcurrency},sourceSha256:'bcbb8e98be21782ff57415a464787df98377b532d3ba54f32ee357b6983405a3', method:'Unchanged V3 rendering; timer cadence 1; frozen time (recorded per case), camera and scene; sequential submissions with completion waits outside GPU-pass and CPU-submit timing. GPU total is sum of stages from the SAME submission, not inverse FPS. Software results do not predict physical GPUs. Warm-ups excluded. Queries drained before changing case. No matrix/diagnostic readbacks during samples.',options,results:[],complete:false};
+  const report={schema:'froxel-receipts-1',build:F.getStats().build,startedAt:new Date().toISOString(),environment:{userAgent:navigator.userAgent,backend:B.kind,adapter:B.adapter,software:/swiftshader|llvmpipe|software/i.test(B.adapter),gpuTimers:!!(B.timestamps||B.ext),css:[innerWidth,innerHeight],dpr:devicePixelRatio,hardwareConcurrency:navigator.hardwareConcurrency},rendererV3SourceSha256:'bcbb8e98be21782ff57415a464787df98377b532d3ba54f32ee357b6983405a3', method:'Unchanged V3 rendering; timer cadence 1; frozen time (recorded per case), camera and scene; sequential submissions with completion waits outside GPU-pass and CPU-submit timing. GPU total is sum of stages from the SAME submission, not inverse FPS. Software results do not predict physical GPUs. Warm-ups excluded. Queries drained before changing case. No matrix/diagnostic readbacks during samples.',options,results:[],complete:false};
   try{F.state.manual=true;await pause(60);await done();if(options.clearUserLights)F.orbs.length=0;for(let i=0;i<cases.length;i++){options.onCase?.(i,cases.length,cases[i]);const r=await caseRun(cases[i],options);report.results.push(r);options.onResult?.(r,i,cases.length);}report.complete=true;}catch(e){report.error=e.message;}finally{F.setWorkspace?.('play');if(F.state.scene!==saved.scene)F.setScene(saved.scene);F.orbs.splice(0,F.orbs.length,...savedOrbs);Object.assign(F.state,saved);F.camera.position.copy(pos);F.camera.quaternion.copy(quat);F.syncCamera?.();F.camera.aspect=aspect;F.camera.updateProjectionMatrix();B.timerEvery=oldEvery;B.resize(...size);if(saved.grid)B.setGrid(saved.grid);F.state.manual=true;F.renderOnce();if(!saved.manual){F.state.manual=false;F.renderOnce();}report.finishedAt=new Date().toISOString();running=false;window.FROXEL_RECEIPTS=report;}
   return report;
  }
@@ -1554,7 +1565,7 @@ window.installReceiptCollector = function(F) {
  <div class="scroll"><table><thead><tr><th>Case</th><th>Mode</th><th class="number">GPU ms</th><th>Relative duration</th><th class="number">P10–P90</th><th class="number">Prep ms</th><th class="number">Surface + markers ms</th><th class="number">Valid samples</th></tr></thead><tbody id="receiptRows"></tbody></table></div>
  <p><small>V1’s cached-field shortcut is not equivalent to V3’s per-surface lighting. SH pixel still loops over local lights. Hybrid intentionally retains full GGX on polished/high-metalness surfaces. No Quest performance claim follows from desktop results.</small></p>`;
  document.body.append(panel);const el=id=>document.getElementById(id);let report=null,partial=[],latest=0,currentCase=0,totalCases=0;
- el('receiptAdapter').textContent=B.kind+' — '+B.adapter+( /swiftshader|llvmpipe|software/i.test(B.adapter)?' — SOFTWARE GPU: not representative hardware performance.':'');
+ el('receiptAdapter').textContent=B.kind+' ; '+B.adapter+( /swiftshader|llvmpipe|software/i.test(B.adapter)?' ; SOFTWARE GPU: not representative hardware performance.':'');
  if(/swiftshader|llvmpipe|software/i.test(B.adapter)){const note=document.createElement('p');note.className='note';note.textContent='Software-GPU safety settings: 5 warm-up + 12 recorded submissions per block; controlled baseline 240 × 150. These local results do not predict physical GPUs.';el('receiptAdapter').after(note);}
  function show(){panel.hidden=false;open.hidden=true;}function hide(){if(FROXELBench.running)return;panel.hidden=true;open.hidden=false;}
  open.onclick=show;el('receiptClose').onclick=hide;el('receiptCancel').onclick=()=>{FROXELBench.cancel();el('receiptStatus').textContent='Stopping after the current GPU submission…';};
@@ -1567,8 +1578,8 @@ window.installReceiptCollector = function(F) {
   for(const r of rows){const tr=document.createElement('tr'),s=r.summary;const values=[r.case,r.modeName,num(s.total.median),'',s.total.n?num(s.total.p10)+'–'+num(s.total.p90):'unavailable',num(s.prepare.median),num(s.render.median),s.total.n];values.forEach((v,i)=>{const td=document.createElement('td');if([2,4,5,6,7].includes(i))td.className='number';if(i===3){td.className='barcell';const bar=document.createElement('span');bar.className='bar';bar.style.width=(s.total.median||0)/max*100+'%';td.append(bar);}else td.textContent=v;tr.append(td);});tbody.append(tr);}
  }
  el('receiptFilter').onchange=draw;
- el('receiptJSON').onclick=()=>download('froxel-v3-receipts.json',JSON.stringify(report||{partial:true,environment:{userAgent:navigator.userAgent,backend:B.kind,adapter:B.adapter,software:/swiftshader|llvmpipe|software/i.test(B.adapter),gpuTimers:!!(B.timestamps||B.ext)},results:partial},null,2),'application/json');
- el('receiptCSV').onclick=()=>{const fields=['case','mode','lights','radius_m','width','height','fog','markers','cluster','valid_samples','gpu_total_median_ms','gpu_p10_ms','gpu_p90_ms','prepare_median_ms','render_median_ms','cpu_submit_median_ms'];const rows=summary().map(r=>[r.case,r.modeName,r.config.lights,r.radius,...r.size,r.config.fog,r.config.markers,r.config.clusters.join('x'),r.summary.total.n,r.summary.total.median,r.summary.total.p10,r.summary.total.p90,r.summary.prepare.median,r.summary.render.median,r.summary.cpu.median]);const quote=x=>'"'+String(x??'').replaceAll('"','""')+'"';download('froxel-v3-receipts.csv',[fields,...rows].map(r=>r.map(quote).join(',')).join('\n'),'text/csv');};
+ el('receiptJSON').onclick=()=>download('froxel-v5-receipts.json',JSON.stringify(report||{partial:true,environment:{userAgent:navigator.userAgent,backend:B.kind,adapter:B.adapter,software:/swiftshader|llvmpipe|software/i.test(B.adapter),gpuTimers:!!(B.timestamps||B.ext)},results:partial},null,2),'application/json');
+ el('receiptCSV').onclick=()=>{const fields=['case','mode','lights','radius_m','width','height','fog','markers','cluster','valid_samples','gpu_total_median_ms','gpu_p10_ms','gpu_p90_ms','prepare_median_ms','render_median_ms','cpu_submit_median_ms'];const rows=summary().map(r=>[r.case,r.modeName,r.config.lights,r.radius,...r.size,r.config.fog,r.config.markers,r.config.clusters.join('x'),r.summary.total.n,r.summary.total.median,r.summary.total.p10,r.summary.total.p90,r.summary.prepare.median,r.summary.render.median,r.summary.cpu.median]);const quote=x=>'"'+String(x??'').replaceAll('"','""')+'"';download('froxel-v5-receipts.csv',[fields,...rows].map(r=>r.map(quote).join(',')).join('\n'),'text/csv');};
  function shuffled(a,seed){let s=seed>>>0;const rand=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function makeCases(kind){let list=[];
   if(kind==='current'){const s=F.state;for(let m=0;m<3;m++)list.push({group:'current',case:'Your current view',home:false,scene:s.scene,mode:m,count:s.count,radius:s.radius,markers:s.markers,fog:s.fog,specular:s.specular,reference:false,layout:s.layout,power:s.power,exposure:s.exposure,normalDetail:s.normalDetail,time:s.time,size:[B.canvas.width,B.canvas.height],cluster:s.cluster.slice(),grid:s.grid.slice()});}
@@ -1590,8 +1601,10 @@ window.installReceiptCollector = function(F) {
  }
  el('receiptCurrent').onclick=()=>start('current');el('receiptSweep').onclick=()=>start('standard');
  window.ReceiptUI={show,hide,start,summary,get report(){return report;}};
- show();
+ hide();
 })();
 
 </script>
+<script src="ui.js"></script>
+<noscript>Froxel requires JavaScript and a browser with WebGPU or WebGL2. <a href="https://tront.xyz/">Return to tront.xyz</a>.</noscript>
 </body></html>
